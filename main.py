@@ -18,7 +18,7 @@ def main():
         # Setup the WebDriver
         driver = setup_driver(config.webdriver_path, config.URL)
 
-        # Load NN list from Excel
+        # Load NN   list from Excel
         nn_list = load_excel_data(config.DtlShtPath, config.DtlShtName, config.columns_to_keep)
 
         # Process the NN list

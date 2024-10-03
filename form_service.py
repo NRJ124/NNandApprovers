@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def fill_form(driver, nn):
     driver.find_element(By.XPATH, config.Inputbox_Description_xpath).send_keys("Hello")
-    driver.find_element(By.XPATH, config.Inputbox_NWID_xpath).send_keys(int(nn), Keys.ENTER)
+    driver.find_element(By.XPATH, config.Inputbox_NWID_xpath).send_keys(nn, Keys.ENTER)
     time.sleep(10)
     driver.find_element(By.XPATH, config.CheckBox_idNoNewActivity_xpath).click()
     driver.find_element(By.XPATH, config.Inputbox_SLC_xpath).send_keys(2828, Keys.ENTER)
@@ -37,9 +37,8 @@ def fill_form(driver, nn):
     time.sleep(2)
     logger.info(f"Driver moved to approver page")
     driver.find_element(By.XPATH, config.DropDown_ApproverDropDown_xpath).click()
-    time.sleep(2)
+    time.sleep(5)
     driver.find_element(By.XPATH, config.Link_ApproverNames_xpath).click()
-    time.sleep(2)
     logger.info(f"Filled form for NN: {nn}")
 
 def handle_approvers(driver):
@@ -47,14 +46,15 @@ def handle_approvers(driver):
     approver_list = ",".join([a.text for a in approvers])
     return approver_list or "No Approver Found"
 
+#//span[@style='width: 40%;' and @class='sapMSelectListCell sapMSelectListLastCell']
 def process_nn_list(driver, nn_list):
     nn_status = []
     approvers = []
     for nn in nn_list:
-        logger.info(f"Processing NN: {nn}")
+        logger.info(f"Processing NN: {int(nn)}")
         time.sleep(5)
         try:
-            fill_form(driver, nn)
+            fill_form(driver, int(nn))
             approvers.append(handle_approvers(driver))
             nn_status.append("Valid NN")
             driver.get(config.URL)
@@ -62,7 +62,7 @@ def process_nn_list(driver, nn_list):
             # WebDriverWait(driver, 30).until(EC.title_contains("Intercompany"))
         except Exception as e:
             if 'idNoNewActivity' in str(e):
-                logger.error(f"Invalid NN: {nn}")
+                logger.error(f"Invalid NN: {int(nn)}")
                 nn_status.append("Invalid NN")
                 approvers.append("")
                 time.sleep(2)
